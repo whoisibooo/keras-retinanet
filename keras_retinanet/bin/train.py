@@ -535,8 +535,8 @@ def main(args=None):
         validation_generator = None
 
     # start training
-    return training_model.fit_generator(
-        generator=train_generator,
+    return training_model.fit(#_generator(
+        train_generator, #generator=train_generator,
         steps_per_epoch=args.steps,
         epochs=args.epochs,
         verbose=1,

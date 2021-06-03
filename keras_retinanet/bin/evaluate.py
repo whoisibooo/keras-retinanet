@@ -148,7 +148,7 @@ def main(args=None):
 
     # load the model
     print('Loading model, this may take a second...')
-    model = models.load_model(args.model, backbone_name=args.backbone)
+    model = models.load_model('/tank/prj_dang/iboeit00/snapshots/resnet50_csv_30.h5', backbone_name=args.backbone)#(args.model, backbone_name=args.backbone)
     generator.compute_shapes = make_shapes_callback(model)
 
     # optionally convert the model

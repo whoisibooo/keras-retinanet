@@ -74,6 +74,7 @@ def main(args=None):
             pyramid_levels = parse_pyramid_levels(args.config)
 
     # load the model
+    #model = models.load_model('/tank/prj_dang/iboeit00/snapshots/resnet100/resnet101_csv_50.h5', backbone_name=args.backbone)
     model = models.load_model(args.model_in, backbone_name=args.backbone)
 
     # check if this is indeed a training model

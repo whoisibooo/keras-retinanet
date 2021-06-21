@@ -196,7 +196,7 @@ def default_submodels(num_classes, num_anchors):
     return [
         ('regression', default_regression_model(4, num_anchors)),
         ('classification', default_classification_model(num_classes, num_anchors)),
-        ('orientation', default_regression_model(2, num_anchors))
+        ('orientation', default_regression_model(4, num_anchors, name = 'orientation_model'))
     ]
 
 

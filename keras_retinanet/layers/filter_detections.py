@@ -108,7 +108,7 @@ def filter_detections(
     pad_size = keras.backend.maximum(0, max_detections - keras.backend.shape(scores)[0])
     boxes    = tensorflow.pad(boxes, [[0, pad_size], [0, 0]], constant_values=-1)
 
-    points   = tensorflow.pad(points, [[0, pad_size]], constant_values=-1)
+    points   = tensorflow.pad(points, [[0, pad_size], [0, 0]], constant_values=-1)
 
     scores   = tensorflow.pad(scores, [[0, pad_size]], constant_values=-1)
     labels   = tensorflow.pad(labels, [[0, pad_size]], constant_values=-1)
@@ -118,7 +118,7 @@ def filter_detections(
     # set shapes, since we know what they are
     boxes.set_shape([max_detections, 4])
 
-    points.set_shape([max_detections, 2])
+    points.set_shape([max_detections, 4])
 
     scores.set_shape([max_detections])
     labels.set_shape([max_detections])
@@ -193,7 +193,7 @@ class FilterDetections(keras.layers.Layer):
         # call filter_detections on each batch
         dtypes = [keras.backend.floatx(), keras.backend.floatx(), 'int32'] + [o.dtype for o in other]
         shapes = [(self.max_detections, 4), (self.max_detections,), (self.max_detections,)]
-        shapes.extend([(self.max_detections,) + o.shape[2:] for o in other])
+        shapes.extend([(self.max_detections,) + o.shape[3:] for o in other])
         outputs = backend.map_fn(
             _filter_detections,
             elems=[boxes, classification, points, other],
@@ -218,7 +218,7 @@ class FilterDetections(keras.layers.Layer):
             (input_shape[0][0], self.max_detections, 4),
             (input_shape[1][0], self.max_detections),
             (input_shape[1][0], self.max_detections),
-            (input_shape[2][0], self.max_detections, 2)
+            (input_shape[2][0], self.max_detections, 4)
         ] + [
             tuple([input_shape[i][0], self.max_detections] + list(input_shape[i][3:])) for i in range(3, len(input_shape))
         ]

@@ -195,8 +195,8 @@ def default_submodels(num_classes, num_anchors):
     """
     return [
         ('regression', default_regression_model(4, num_anchors)),
-        ('classification', default_classification_model(num_classes, num_anchors)),
-        ('orientation', default_regression_model(4, num_anchors, name = 'orientation_model'))
+        ('classification', default_classification_model(num_classes, num_anchors))#,
+        #('orientation', default_regression_model(4, num_anchors, name = 'orientation_model'))
     ]
 
 
@@ -381,17 +381,17 @@ def retinanet_bbox(
     # we expect the anchors, regression and classification values as first output
     regression     = model.outputs[0]
     classification = model.outputs[1]
-    orientation = model.outputs[2]
+    #orientation = model.outputs[2]
 
     # "other" can be any additional output from custom submodels, by default this will be []
-    other = model.outputs[3:]
+    other = model.outputs[2:]
 
     # apply predicted regression to anchors
     boxes = layers.RegressBoxes(name='boxes')([anchors, regression])
     boxes = layers.ClipBoxes(name='clipped_boxes')([model.inputs[0], boxes])
 
-    points = layers.RegressBoxes(name='points')([anchors, orientation])
-    points = layers.ClipBoxes(name='clipped_points')([model.inputs[2], points])
+    #points = layers.RegressBoxes(name='points')([anchors, orientation])
+    #points = layers.ClipBoxes(name='clipped_points')([model.inputs[2], points])
 
     # filter detections (apply NMS / score threshold / select top-k)
     detections = layers.FilterDetections(
@@ -402,7 +402,7 @@ def retinanet_bbox(
         score_threshold       = score_threshold,
         max_detections        = max_detections,
         parallel_iterations   = parallel_iterations
-    )([boxes, classification, points] + other)
+    )([boxes, classification] + other) #, points] + other)
 
     # construct the model
     return keras.models.Model(inputs=model.inputs, outputs=detections, name=name)

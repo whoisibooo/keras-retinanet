@@ -58,13 +58,9 @@ def filter_detections(
             filtered_boxes  = tensorflow.gather_nd(boxes, indices)
             filtered_scores = keras.backend.gather(scores, indices)[:, 0]
 
-            #filtered_orientation = tensorflow.gather_nd(points, indices)
-            #filtered_scores_orient = keras.backend.gather(scores, indices)[:,2]
 
             # perform NMS
             nms_indices = tensorflow.image.non_max_suppression(filtered_boxes, filtered_scores, max_output_size=max_detections, iou_threshold=nms_threshold)
-
-            #nms_indices_orient = tensorflow.image.non_max_suppression(filtered_orientation, filtered_scores_orient, max_output_size=max_detections, iou_threshold=nms_threshold)
 
             # filter indices based on NMS
             indices = keras.backend.gather(indices, nms_indices)
@@ -100,15 +96,12 @@ def filter_detections(
     boxes               = keras.backend.gather(boxes, indices)
     labels              = keras.backend.gather(labels, top_indices)
 
-    #points              = keras.backend.gather(points, indices)
-
     other_              = [keras.backend.gather(o, indices) for o in other]
 
     # zero pad the outputs
     pad_size = keras.backend.maximum(0, max_detections - keras.backend.shape(scores)[0])
     boxes    = tensorflow.pad(boxes, [[0, pad_size], [0, 0]], constant_values=-1)
 
-    #points   = tensorflow.pad(points, [[0, pad_size], [0, 0]], constant_values=-1)
 
     scores   = tensorflow.pad(scores, [[0, pad_size]], constant_values=-1)
     labels   = tensorflow.pad(labels, [[0, pad_size]], constant_values=-1)
@@ -118,14 +111,13 @@ def filter_detections(
     # set shapes, since we know what they are
     boxes.set_shape([max_detections, 4])
 
-    #points.set_shape([max_detections, 4])
 
     scores.set_shape([max_detections])
     labels.set_shape([max_detections])
     for o, s in zip(other_, [list(keras.backend.int_shape(o)) for o in other]):
         o.set_shape([max_detections] + s[1:])
 
-    return [boxes, scores, labels] + other_ #, points] + other_
+    return [boxes, scores, labels] + other_ 
 
 
 class FilterDetections(keras.layers.Layer):
@@ -168,20 +160,17 @@ class FilterDetections(keras.layers.Layer):
         """
         boxes          = inputs[0]
         classification = inputs[1]
-        #points         = inputs[2]
         other          = inputs[2:]
 
         # wrap nms with our parameters
         def _filter_detections(args):
             boxes          = args[0]
             classification = args[1]
-            #points         = args[2]
             other          = args[2]
 
             return filter_detections(
                 boxes,
                 classification,
-                #points,
                 other,
                 nms                   = self.nms,
                 class_specific_filter = self.class_specific_filter,
@@ -196,7 +185,7 @@ class FilterDetections(keras.layers.Layer):
         shapes.extend([(self.max_detections,) + o.shape[2:] for o in other])
         outputs = backend.map_fn(
             _filter_detections,
-            elems=[boxes, classification, other], #points, other],
+            elems=[boxes, classification, other],
             dtype=dtypes,
             shapes=shapes,
             parallel_iterations=self.parallel_iterations,

@@ -163,7 +163,7 @@ def main(args=None):
         from ..utils.coco_eval import evaluate_coco
         evaluate_coco(generator, model, args.score_threshold)
     else:
-        average_precisions, inference_time = evaluate(
+        average_precisions, precision, recall, true_positives, false_positives, inference_time = evaluate(
             generator,
             model,
             iou_threshold=args.iou_threshold,
@@ -189,6 +189,7 @@ def main(args=None):
 
         print('mAP using the weighted average of precisions among classes: {:.4f}'.format(sum([a * b for a, b in zip(total_instances, precisions)]) / sum(total_instances)))
         print('mAP: {:.4f}'.format(sum(precisions) / sum(x > 0 for x in total_instances)))
+        print('precision: {:.4f}, recall: {:.4f}, tp: {:.4f}, fp: {:.4f}', precision, recall. true_positives, false_positives)
 
 
 if __name__ == '__main__':

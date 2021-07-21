@@ -122,8 +122,7 @@ def create_models(backbone_retinanet, num_classes, weights, multi_gpu=0,
     training_model.compile(
         loss={
             'regression'    : losses.smooth_l1(),
-            'classification': losses.focal()#,
-            #'orientation'   : losses.smooth_l1()
+            'classification': losses.focal()
         },
         optimizer=keras.optimizers.Adam(lr=lr, clipnorm=optimizer_clipnorm)
     )
@@ -536,8 +535,8 @@ def main(args=None):
         validation_generator = None
 
     # start training
-    return training_model.fit(#_generator(
-        train_generator, #generator=train_generator,
+    return training_model.fit(
+        train_generator, 
         steps_per_epoch=args.steps,
         epochs=args.epochs,
         verbose=1,

@@ -85,13 +85,7 @@ def _read_annotations(csv_reader, classes):
         x2 = _parse(x2, int, 'line {}: malformed x2: {{}}'.format(line))
         y2 = _parse(y2, int, 'line {}: malformed y2: {{}}'.format(line))
 
-        """
-        o1 = _parse(o1, int, 'line {}: malformed o1: {{}}'.format(line))
-        o2 = _parse(o2, int, 'line {}: malformed o2: {{}}'.format(line))
-        o3 = _parse(o1, int, 'line {}: malformed o1: {{}}'.format(line))
-        o4 = _parse(o2, int, 'line {}: malformed o2: {{}}'.format(line))
-
-        """
+        
 
         # Check that the bounding box is valid.
         if x2 <= x1:
@@ -219,7 +213,7 @@ class CSVGenerator(Generator):
         """ Load annotations for an image_index.
         """
         path        = self.image_names[image_index]
-        annotations = {'labels': np.empty((0,)), 'bboxes': np.empty((0, 4))} #'orient': np.empty((0,4))}
+        annotations = {'labels': np.empty((0,)), 'bboxes': np.empty((0, 4))}
 
         for idx, annot in enumerate(self.image_data[path]):
             annotations['labels'] = np.concatenate((annotations['labels'], [self.name_to_label(annot['class'])]))
@@ -229,12 +223,5 @@ class CSVGenerator(Generator):
                 float(annot['x2']),
                 float(annot['y2']),
             ]]))
-            """
-            annotations['orient'] = np.concatenate((annotations['orient'], [[
-                float(annot['o1']),
-                float(annot['o2']),
-                float(annot['o3']),
-                float(annot['o4']),
-            ]])) """
 
         return annotations
